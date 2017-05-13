@@ -28,14 +28,14 @@
             android:layout_margin="10dp">
 
             <TextView
-                android:id="@+id/tvAuthor"
+                android:id="@+id/groupTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Group Name"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tvTitle"
+                android:id="@+id/memberCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="8 members"/>
