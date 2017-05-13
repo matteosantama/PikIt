@@ -46,7 +46,6 @@ public class LoginActivity extends BaseActivity {
 
     private FirebaseAuth firebaseAuth;
     private DatabaseReference firebaseDatabase;
-    private GroupRecyclerAdapter groupRecyclerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,46 +59,6 @@ public class LoginActivity extends BaseActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance().getReference();
 
-        // Instantiate Recycler
-        groupRecyclerAdapter = new GroupRecyclerAdapter(getApplicationContext(), FirebaseAuth.getInstance().getCurrentUser().getUid());
-        RecyclerView recyclerViewGroups = (RecyclerView) findViewById(
-                R.id.recyclerViewGroups);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerViewGroups.setLayoutManager(layoutManager);
-        recyclerViewGroups.setAdapter(groupRecyclerAdapter);
-
-        initFireBaseListener();
-    }
-
-    public void initFireBaseListener() {
-        DatabaseReference groupsRef = FirebaseDatabase.getInstance().getReference("");
-        postsRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Post newPost = dataSnapshot.getValue(Post.class);
-                postsAdapter.addPost(newPost, dataSnapshot.getKey());
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
     }
 
     @OnClick(R.id.btn_login)
@@ -128,6 +87,7 @@ public class LoginActivity extends BaseActivity {
                 }
             }
         });
+        finish();
     }
 
     @OnClick(R.id.btn_register)

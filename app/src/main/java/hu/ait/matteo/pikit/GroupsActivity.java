@@ -6,15 +6,22 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -28,6 +35,8 @@ public class GroupsActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
     private DatabaseReference firebaseDatabase;
+    private GroupRecyclerAdapter groupRecyclerAdapter;
+    private String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +53,51 @@ public class GroupsActivity extends AppCompatActivity {
         // Connect to FireBase
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance().getReference();
+
+        userID = firebaseAuth.getCurrentUser().getUid();
+
+        // Instantiate Recycler
+        groupRecyclerAdapter = new GroupRecyclerAdapter(getApplicationContext(), FirebaseAuth.getInstance().getCurrentUser().getUid());
+        RecyclerView recyclerViewGroups = (RecyclerView) findViewById(
+                R.id.recyclerViewGroups);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerViewGroups.setLayoutManager(layoutManager);
+        recyclerViewGroups.setAdapter(groupRecyclerAdapter);
+
+        initFirebaseListener();
+    }
+
+    public void initFirebaseListener() {
+        DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("users/"+userID+"/groups");
+        postsRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+//                Log.d("TEST","key: "+dataSnapshot.getKey());
+//                Log.d("TEST","value: "+dataSnapshot.getValue());
+                String groupID = (String) dataSnapshot.getValue();
+                groupRecyclerAdapter.addGroupID(groupID);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -96,14 +150,12 @@ public class GroupsActivity extends AppCompatActivity {
     }
 
     public void addGroupToFireBase(String groupName) {
-        String creatorID = firebaseAuth.getCurrentUser().getUid();
-
-        Group newGroup = new Group(groupName, creatorID);
+        Group newGroup = new Group(groupName, userID);
 
         // add the full group to the "group" section of FireBase
         firebaseDatabase.child("groups").child(newGroup.getUniqueID()).setValue(newGroup);
         // add the groupID to the "user"
-        firebaseDatabase.child("users").child(creatorID).child("groups").child(newGroup.getName()).setValue(newGroup.getUniqueID());
+        firebaseDatabase.child("users").child(userID).child("groups").child(newGroup.getName()).setValue(newGroup.getUniqueID());
 
     }
 
