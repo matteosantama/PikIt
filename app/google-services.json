@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "65787157463",
+    "firebase_url": "https://pikit-770bc.firebaseio.com",
+    "project_id": "pikit-770bc",
+    "storage_bucket": "pikit-770bc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:65787157463:android:8b7661e6330ba7bb",
+        "android_client_info": {
+          "package_name": "hu.ait.matteo.pikit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "65787157463-9j0nk083lr87v5b8sh9np4sgpnes43li.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hu.ait.matteo.pikit",
+            "certificate_hash": "fcb2b7205c018ab11206af279b10a99617061fa8"
+          }
+        },
+        {
+          "client_id": "65787157463-t7d7hqtna9pcn9ff2q89k2gf488esqe4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCH_eui_XZqio5lP0qSARu4xUzhelm6dE4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "65787157463-t7d7hqtna9pcn9ff2q89k2gf488esqe4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
