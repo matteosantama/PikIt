@@ -1,6 +1,8 @@
 package hu.ait.matteo.pikit;
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,6 +38,7 @@ public class GroupRecyclerAdapter extends RecyclerView.Adapter<GroupRecyclerAdap
         this.context = context;
         this.uID = uID;
         groupIDList = new ArrayList<String>();
+        groupList = new ArrayList<Group>();
     }
 
     @Override
@@ -47,15 +50,28 @@ public class GroupRecyclerAdapter extends RecyclerView.Adapter<GroupRecyclerAdap
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        Log.d("test", "bind called");
-        holder.groupTitle.setText(groupIDList.get(position));
+    public void onBindViewHolder(ViewHolder holder, final int position) {
+        if (groupList.size() != 0) {
+            holder.groupTitle.setText(groupList.get(position).getName());
+            holder.memberCount.setText(groupList.get(position).getMembers().size() + " member(s)");
+
+            holder.cardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context,GroupDetail.class);
+
+                    String groupID = groupList.get(position).getUniqueID();
+                    intent.putExtra("groupID", groupID);
+
+                    context.startActivity(intent);
+                }
+            });
+        }
     }
 
     @Override
     public int getItemCount() {
-        return groupIDList.size();
-//        return 0;
+        return groupList.size();
     }
 
     public void addGroupID(String groupID) {
@@ -63,12 +79,19 @@ public class GroupRecyclerAdapter extends RecyclerView.Adapter<GroupRecyclerAdap
         notifyDataSetChanged();
     }
 
+    public void addGroup(Group group) {
+        groupList.add(group);
+        notifyDataSetChanged();
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        public CardView cardView;
         public TextView groupTitle;
         public TextView memberCount;
 
         public ViewHolder(View itemView) {
             super(itemView);
+            cardView = (CardView) itemView.findViewById(R.id.card_view);
             groupTitle = (TextView) itemView.findViewById(R.id.groupTitle);
             memberCount = (TextView) itemView.findViewById(R.id.memberCount);
         }

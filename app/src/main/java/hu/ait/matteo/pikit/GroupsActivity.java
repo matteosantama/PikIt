@@ -64,16 +64,46 @@ public class GroupsActivity extends AppCompatActivity {
         recyclerViewGroups.setLayoutManager(layoutManager);
         recyclerViewGroups.setAdapter(groupRecyclerAdapter);
 
-        initFirebaseListener();
+        initUserListener();
+        initGroupListener();
     }
 
-    public void initFirebaseListener() {
-        DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("users/"+userID+"/groups");
-        postsRef.addChildEventListener(new ChildEventListener() {
+    public void initGroupListener() {
+        DatabaseReference groupsRef = FirebaseDatabase.getInstance().getReference("groups");
+        groupsRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-//                Log.d("TEST","key: "+dataSnapshot.getKey());
-//                Log.d("TEST","value: "+dataSnapshot.getValue());
+                Group group = dataSnapshot.getValue(Group.class);
+                groupRecyclerAdapter.addGroup(group);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void initUserListener() {
+        DatabaseReference userGroupsRef = FirebaseDatabase.getInstance().getReference("users/"+userID+"/groups");
+        userGroupsRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 String groupID = (String) dataSnapshot.getValue();
                 groupRecyclerAdapter.addGroupID(groupID);
             }

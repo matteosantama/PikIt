@@ -78,8 +78,6 @@ public class LoginActivity extends BaseActivity {
                 hideProgressDialog();
 
                 if (task.isSuccessful()) {
-                    Toast.makeText(LoginActivity.this, "Login ok", Toast.LENGTH_SHORT).show();
-
                     startActivity(new Intent(LoginActivity.this, GroupsActivity.class));
                 } else {
                     Toast.makeText(LoginActivity.this, "Failed: "+task.getException().getLocalizedMessage(),
@@ -87,7 +85,6 @@ public class LoginActivity extends BaseActivity {
                 }
             }
         });
-        finish();
     }
 
     @OnClick(R.id.btn_register)

@@ -31,4 +31,8 @@ public class Group {
     public String getName() {
         return this.name;
     }
+
+    public List<String> getMembers() {
+        return this.members;
+    }
 }
