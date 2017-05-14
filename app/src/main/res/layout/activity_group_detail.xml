@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="hu.ait.matteo.pikit.GroupDetail"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
 
     <android.support.v7.widget.Toolbar
@@ -14,22 +14,19 @@
         android:layout_width="match_parent"
         android:minHeight="?attr/actionBarSize"
         android:background="@color/colorPrimary"
-        app:theme="@style/AppTheme.AppBarOverlay" >
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Group Title"
-            android:layout_gravity="center"
-            android:id="@+id/toolbar_title"
-            android:textColor="#ffff00"/>
+        app:theme="@style/AppTheme.AppBarOverlay"
+        app:title="Group Title">
 
         <Button
+            android:id="@+id/addUsersBtn"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end"
-            android:text="Add Users"/>
+            android:text="Add Users"
+            android:background="@android:color/transparent"
+            android:textColor="@android:color/white"
+            android:clickable="true"
+            />
 
     </android.support.v7.widget.Toolbar>
 

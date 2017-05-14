@@ -17,9 +17,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import hu.ait.matteo.pikit.data.Group;
 
@@ -31,13 +29,11 @@ public class GroupRecyclerAdapter extends RecyclerView.Adapter<GroupRecyclerAdap
 
     private Context context;
     private String uID;
-    private List<String> groupIDList;
     private List<Group> groupList;
 
     public GroupRecyclerAdapter(Context context, String uID) {
         this.context = context;
         this.uID = uID;
-        groupIDList = new ArrayList<String>();
         groupList = new ArrayList<Group>();
     }
 
@@ -72,11 +68,6 @@ public class GroupRecyclerAdapter extends RecyclerView.Adapter<GroupRecyclerAdap
     @Override
     public int getItemCount() {
         return groupList.size();
-    }
-
-    public void addGroupID(String groupID) {
-        groupIDList.add(groupID);
-        notifyDataSetChanged();
     }
 
     public void addGroup(Group group) {

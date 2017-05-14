@@ -64,7 +64,6 @@ public class GroupsActivity extends AppCompatActivity {
         recyclerViewGroups.setLayoutManager(layoutManager);
         recyclerViewGroups.setAdapter(groupRecyclerAdapter);
 
-        initUserListener();
         initGroupListener();
     }
 
@@ -99,35 +98,10 @@ public class GroupsActivity extends AppCompatActivity {
         });
     }
 
-    public void initUserListener() {
-        DatabaseReference userGroupsRef = FirebaseDatabase.getInstance().getReference("users/"+userID+"/groups");
-        userGroupsRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                String groupID = (String) dataSnapshot.getValue();
-                groupRecyclerAdapter.addGroupID(groupID);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+    @Override
+    public void onBackPressed() {
+        FirebaseAuth.getInstance().signOut();
+        super.onBackPressed();
     }
 
     @Override
@@ -165,7 +139,6 @@ public class GroupsActivity extends AppCompatActivity {
 
         builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                // TODO go to group view
                 addGroupToFireBase(groupNameET.getText().toString());
             }
         });
