@@ -141,7 +141,6 @@ public class GroupDetail extends AppCompatActivity {
             public void onSuccess(DataSnapshot data) {
                 // On success, check value of returned data
                 if (data.getValue() != null) {
-                    Log.d("test", data.getValue().toString());
 //                    addedUser = data.getChildren().iterator().next().getValue(User.class);
                     String Uid = data.getChildren().iterator().next().child("Uid").getValue(String.class);
                     String email = data.getChildren().iterator().next().child("email").getValue(String.class);
@@ -191,6 +190,7 @@ public class GroupDetail extends AppCompatActivity {
     @OnClick(R.id.go_to_cam)
     public void openCamera() {
         // TODO
+        startActivity(new Intent(this, CameraActivity.class));
     }
 
     @Override

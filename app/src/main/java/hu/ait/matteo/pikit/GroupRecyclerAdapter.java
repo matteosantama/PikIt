@@ -29,12 +29,16 @@ public class GroupRecyclerAdapter extends RecyclerView.Adapter<GroupRecyclerAdap
 
     private Context context;
     private String uID;
+//    private List<String> myGroupIDs;
     private List<Group> groupList;
 
     public GroupRecyclerAdapter(Context context, String uID) {
         this.context = context;
         this.uID = uID;
         groupList = new ArrayList<Group>();
+//        myGroupIDs = new ArrayList<String>();
+
+//        initGroupListener();
     }
 
     @Override
@@ -69,6 +73,33 @@ public class GroupRecyclerAdapter extends RecyclerView.Adapter<GroupRecyclerAdap
     public int getItemCount() {
         return groupList.size();
     }
+
+
+//    public void initGroupListener() {
+//        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("groups");
+//        ref.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                Log.d("test", dataSnapshot.toString());
+//                for (DataSnapshot data: dataSnapshot.getChildren()) {
+//                    Log.d("TEST", data.toString());
+//                    Log.d("TESTIDS", myGroupIDs.toString());
+//                    if (myGroupIDs.contains(data.getKey().toString())) {
+//                        Log.d("TEST2", "here");
+//                        Group group = data.getValue(Group.class);
+//                        Log.d("TEST", group.getName());
+//                        groupList.add(group);
+//                    }
+//                }
+//                Log.d("TEST!!!!", groupList.toString());
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
 
     public void addGroup(Group group) {
         groupList.add(group);

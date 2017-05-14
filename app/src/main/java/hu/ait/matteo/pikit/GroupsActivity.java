@@ -24,6 +24,12 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -68,12 +74,16 @@ public class GroupsActivity extends AppCompatActivity {
     }
 
     public void initGroupListener() {
-        DatabaseReference groupsRef = FirebaseDatabase.getInstance().getReference("groups");
+        Query groupsRef = FirebaseDatabase.getInstance().getReference("groups");
         groupsRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Group group = dataSnapshot.getValue(Group.class);
-                groupRecyclerAdapter.addGroup(group);
+                for (DataSnapshot data: dataSnapshot.child("members").getChildren()) {
+                    if (data.getValue().toString().equals(userID)) {
+                        Group group = dataSnapshot.getValue(Group.class);
+                        groupRecyclerAdapter.addGroup(group);
+                    }
+                }
             }
 
             @Override

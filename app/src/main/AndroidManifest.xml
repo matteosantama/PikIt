@@ -3,6 +3,9 @@
     package="hu.ait.matteo.pikit">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature android:name="android.hardware.camera" />
 
     <application
         android:allowBackup="true"
@@ -25,6 +28,8 @@
         <activity
             android:name=".GroupDetail"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".CameraActivity"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
