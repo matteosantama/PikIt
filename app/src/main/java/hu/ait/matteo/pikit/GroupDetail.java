@@ -1,6 +1,7 @@
 package hu.ait.matteo.pikit;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -185,6 +186,11 @@ public class GroupDetail extends AppCompatActivity {
         // add the groupID to the "user"
         firebaseDatabase.getReference().child("users").child(user.Uid)
                 .child("groupIDs").child(group.getName()).setValue(group.getUniqueID());
+    }
+
+    @OnClick(R.id.go_to_cam)
+    public void openCamera() {
+        // TODO
     }
 
     @Override
