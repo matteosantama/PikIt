@@ -14,16 +14,20 @@ import android.widget.EditText;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import hu.ait.matteo.pikit.data.Group;
 import hu.ait.matteo.pikit.data.User;
+import hu.ait.matteo.pikit.interfaces.GetDataListener;
 
 public class GroupDetail extends AppCompatActivity {
 
@@ -64,7 +68,7 @@ public class GroupDetail extends AppCompatActivity {
     private void groupFromFirebase() {
         Query queryRef = firebaseDatabase.getReference("groups/"+groupID);
 
-        queryRef.addValueEventListener(new ValueEventListener() {
+        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 group = dataSnapshot.getValue(Group.class);
@@ -117,39 +121,70 @@ public class GroupDetail extends AppCompatActivity {
             public void onClick(View v) {
                 EditText inputField = (EditText) dialogView.findViewById(R.id.user_to_add);
                 String emailString = inputField.getText().toString();
-                // Attempt to find user in DB
-                userFromDB(emailString);
-                // if not null, add to group on firebase
-//                Log.d("TEST", addedUser.email);
-                if (addedUser != null) {
-                    addedUser = null;
-                    alert.dismiss();
-                } else {
-                    inputField.setError("Cannot find user");
-                }
+
+                // call async task and get user object
+                userFromDB(emailString, inputField, alert);
             }
         });
 
     }
 
-    private void userFromDB(String emailString) {
-
-        Query userQuery = firebaseDatabase.getReference("users").orderByChild("email").equalTo(emailString);
-
-        userQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+    private void userFromDB(String emailString, final EditText field, final AlertDialog alert) {
+        new Database().readDataOnce(emailString, new GetDataListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("TEST", dataSnapshot.toString());
-                if (dataSnapshot.getValue() != null) {
-                    addedUser = dataSnapshot.getChildren().iterator().next().getValue(User.class);
-                    Log.d("TEST", addedUser.email);
+            public void onStart() {
+                //DO SOME THING WHEN START GET DATA HERE
+            }
+
+            @Override
+            public void onSuccess(DataSnapshot data) {
+                // On success, check value of returned data
+                if (data.getValue() != null) {
+                    Log.d("test", data.getValue().toString());
+//                    addedUser = data.getChildren().iterator().next().getValue(User.class);
+                    String Uid = data.getChildren().iterator().next().child("Uid").getValue(String.class);
+                    String email = data.getChildren().iterator().next().child("email").getValue(String.class);
+                    String username = data.getChildren().iterator().next().child("username").getValue(String.class);
+                    DataSnapshot groups = data.getChildren().iterator().next().child("groupIDs");
+                    Iterable<DataSnapshot> it = groups.getChildren();
+                    List<String> groupIdList = new ArrayList<String>();
+
+                    for (DataSnapshot child : it) {
+                        groupIdList.add(child.getValue(String.class));
+                    }
+
+                    addedUser = new User(email,username,Uid,groupIdList);
+
+                    // add user to group object and group to user object
+                    group.addUser(addedUser.Uid);
+                    addedUser.addGroup(groupID);
+                    //update Firebase
+                    updateFirebase(group, addedUser);
+                    //set user to null again for next addition
+                    addedUser = null;
+                    // dismiss alert
+                    alert.dismiss();
+                } else {
+                    // otherwise set error message
+                    field.setError("Cannot find user");
                 }
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onFailed(DatabaseError databaseError) {
+                //DO SOME THING WHEN GET DATA FAILED HERE
             }
         });
+
+    }
+
+    private void updateFirebase(Group group, User user) {
+
+        // add the full group to the "group" section of FireBase
+        firebaseDatabase.getReference().child("groups").child(group.getUniqueID()).setValue(group);
+        // add the groupID to the "user"
+        firebaseDatabase.getReference().child("users").child(user.Uid)
+                .child("groupIDs").child(group.getName()).setValue(group.getUniqueID());
     }
 
     @Override

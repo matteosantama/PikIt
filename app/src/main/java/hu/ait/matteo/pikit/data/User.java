@@ -12,7 +12,7 @@ public class User {
     public String email;
     public String username;
     public String Uid;
-    public List<String> groupIDs;
+    public List<String> groupIDs = new ArrayList<String>();
 
     public User() {
     }
@@ -28,6 +28,9 @@ public class User {
         this.email = email;
         this.username = username;
         this.Uid = Uid;
-        this.groupIDs = new ArrayList<String>();
+    }
+
+    public void addGroup(String groupID) {
+        this.groupIDs.add(groupID);
     }
 }

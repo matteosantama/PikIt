@@ -35,4 +35,8 @@ public class Group {
     public List<String> getMembers() {
         return this.members;
     }
+
+    public void addUser(String Uid) {
+        members.add(Uid);
+    }
 }

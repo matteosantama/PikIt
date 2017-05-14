@@ -158,7 +158,7 @@ public class GroupsActivity extends AppCompatActivity {
         // add the full group to the "group" section of FireBase
         firebaseDatabase.child("groups").child(newGroup.getUniqueID()).setValue(newGroup);
         // add the groupID to the "user"
-        firebaseDatabase.child("users").child(userID).child("groups").child(newGroup.getName()).setValue(newGroup.getUniqueID());
+        firebaseDatabase.child("users").child(userID).child("groupIDs").child(newGroup.getName()).setValue(newGroup.getUniqueID());
 
     }
 
