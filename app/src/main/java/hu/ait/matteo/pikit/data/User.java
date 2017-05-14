@@ -1,5 +1,6 @@
 package hu.ait.matteo.pikit.data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,5 +22,12 @@ public class User {
         this.username = username;
         this.Uid = Uid;
         this.groupIDs = groupIDs;
+    }
+
+    public User(String email, String username, String Uid) {
+        this.email = email;
+        this.username = username;
+        this.Uid = Uid;
+        this.groupIDs = new ArrayList<String>();
     }
 }

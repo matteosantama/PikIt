@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,16 +23,20 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import hu.ait.matteo.pikit.data.Group;
+import hu.ait.matteo.pikit.data.User;
 
 public class GroupDetail extends AppCompatActivity {
 
     @BindView(R.id.addUsersBtn)
     Button addUsersBtn;
 
+    private FirebaseDatabase firebaseDatabase;
     private AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F);
     private String groupID;
     private Group group;
     private Toolbar toolbar;
+
+    private User addedUser = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,14 +55,14 @@ public class GroupDetail extends AppCompatActivity {
         // Bind ButterKnife
         ButterKnife.bind(this);
 
-        // Get Group instance
+        // Connect to Firebase and get local Group instance
+        firebaseDatabase = FirebaseDatabase.getInstance();
         groupFromFirebase();
 
     }
 
     private void groupFromFirebase() {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        Query queryRef = database.getReference("groups/"+groupID);
+        Query queryRef = firebaseDatabase.getReference("groups/"+groupID);
 
         queryRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -87,19 +92,64 @@ public class GroupDetail extends AppCompatActivity {
         builder.setMessage("Enter the email address of a user you would like to add");
         builder.setView(dialogView);
 
-        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                // TODO
-            }
-        });
+        builder.setPositiveButton("Add",
+                new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        // Do nothing here
+                    }
+                });
+
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                //pass
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
             }
         });
 
-        AlertDialog alert = builder.create();
+        final AlertDialog alert = builder.create();
         alert.show();
+
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText inputField = (EditText) dialogView.findViewById(R.id.user_to_add);
+                String emailString = inputField.getText().toString();
+                // Attempt to find user in DB
+                userFromDB(emailString);
+                // if not null, add to group on firebase
+//                Log.d("TEST", addedUser.email);
+                if (addedUser != null) {
+                    addedUser = null;
+                    alert.dismiss();
+                } else {
+                    inputField.setError("Cannot find user");
+                }
+            }
+        });
+
+    }
+
+    private void userFromDB(String emailString) {
+
+        Query userQuery = firebaseDatabase.getReference("users").orderByChild("email").equalTo(emailString);
+
+        userQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("TEST", dataSnapshot.toString());
+                if (dataSnapshot.getValue() != null) {
+                    addedUser = dataSnapshot.getChildren().iterator().next().getValue(User.class);
+                    Log.d("TEST", addedUser.email);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 
     @Override
