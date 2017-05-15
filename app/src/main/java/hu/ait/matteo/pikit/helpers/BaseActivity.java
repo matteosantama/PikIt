@@ -1,4 +1,4 @@
-package hu.ait.matteo.pikit;
+package hu.ait.matteo.pikit.helpers;
 
 import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;

@@ -1,10 +1,17 @@
 package hu.ait.matteo.pikit;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,22 +19,35 @@ import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import hu.ait.matteo.pikit.adapters.ImageRecyclerAdapter;
 import hu.ait.matteo.pikit.data.Group;
 import hu.ait.matteo.pikit.data.User;
+import hu.ait.matteo.pikit.helpers.Database;
 import hu.ait.matteo.pikit.interfaces.GetDataListener;
 
 public class GroupDetail extends AppCompatActivity {
@@ -36,12 +56,17 @@ public class GroupDetail extends AppCompatActivity {
     Button addUsersBtn;
 
     private FirebaseDatabase firebaseDatabase;
+    private StorageReference storageRef;
     private AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F);
     private String groupID;
+    private String uID;
     private Group group;
     private Toolbar toolbar;
+    private ImageRecyclerAdapter imageRecyclerAdapter;
 
     private User addedUser = null;
+
+    private static final int CAMERA_REQUEST = 1888;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +74,9 @@ public class GroupDetail extends AppCompatActivity {
         setContentView(R.layout.activity_group_detail);
 
         // Get groupID from previous activity
-        Bundle bundle = getIntent().getExtras();
-        groupID = bundle.getString("groupID");
+        Bundle extras = getIntent().getExtras();
+        groupID = extras.getString("groupID");
+        uID = extras.getString("userID");
 
         // Init Toolbar
         toolbar = (Toolbar) findViewById(R.id.toolbar_top);
@@ -62,8 +88,21 @@ public class GroupDetail extends AppCompatActivity {
 
         // Connect to Firebase and get local Group instance
         firebaseDatabase = FirebaseDatabase.getInstance();
+        storageRef = FirebaseStorage.getInstance().getReference();
         groupFromFirebase();
 
+        // Instantiate Recycler
+        imageRecyclerAdapter = new ImageRecyclerAdapter(groupID, uID);
+        RecyclerView recyclerViewGroups = (RecyclerView) findViewById(
+                R.id.imageRecyclerView);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerViewGroups.setLayoutManager(layoutManager);
+        recyclerViewGroups.setAdapter(imageRecyclerAdapter);
+
+        // Connect listeners
+        connectListeners();
+        // add groupID to images DB for the first time
+        // TODO
     }
 
     private void groupFromFirebase() {
@@ -82,6 +121,38 @@ public class GroupDetail extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void connectListeners() {
+        Query imagesRef = FirebaseDatabase.getInstance().getReference("images").child(groupID);
+        imagesRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                String key = dataSnapshot.getKey().toString();
+                String value = dataSnapshot.getValue().toString();
+                imageRecyclerAdapter.addImage(key, value);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @OnClick(R.id.addUsersBtn)
@@ -189,8 +260,32 @@ public class GroupDetail extends AppCompatActivity {
 
     @OnClick(R.id.go_to_cam)
     public void openCamera() {
-        // TODO
-        startActivity(new Intent(this, CameraActivity.class));
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cameraIntent, CAMERA_REQUEST);
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+
+            String photoID = UUID.randomUUID().toString();
+
+            // add photo to storage
+            StorageReference childReference = storageRef.child(groupID+"/"+photoID);
+            Uri uri = getImageUri(photo);
+            childReference.putFile(uri);
+
+            // add photoID to DB
+            DatabaseReference dbRef = firebaseDatabase.getReference("images").child(groupID).child(uID);
+            dbRef.setValue(photoID);
+        }
+    }
+
+    public Uri getImageUri(Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(this.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
     }
 
     @Override
@@ -198,4 +293,5 @@ public class GroupDetail extends AppCompatActivity {
         onBackPressed();
         return true;
     }
+
 }

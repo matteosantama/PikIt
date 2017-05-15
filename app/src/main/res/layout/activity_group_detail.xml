@@ -5,31 +5,48 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="hu.ait.matteo.pikit.GroupDetail"
-    android:orientation="vertical">
+    android:fitsSystemWindows="true">
 
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar_top"
-        android:layout_height="wrap_content"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:minHeight="?attr/actionBarSize"
-        android:background="@color/colorPrimary"
-        app:theme="@style/AppTheme.AppBarOverlay"
-        app:title="Group Title">
+        android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/addUsersBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="end"
-            android:text="Add Users"
-            android:background="@android:color/transparent"
-            android:textColor="@android:color/white"
-            android:clickable="true"
-            />
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_top"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:minHeight="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            app:theme="@style/AppTheme.AppBarOverlay"
+            app:title="Group Title">
 
-    </android.support.v7.widget.Toolbar>
+            <Button
+                android:id="@+id/addUsersBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:text="Add Users"
+                android:background="@android:color/transparent"
+                android:textColor="@android:color/white"
+                android:clickable="true" />
 
+        </android.support.v7.widget.Toolbar>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/toolbar_top"
+            android:layout_alignParentBottom="true">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/imageRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+        </ScrollView>
+
+    </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/go_to_cam"
@@ -39,5 +56,6 @@
         android:layout_margin="16dp"
         app:fabSize="normal"
         android:src="@mipmap/ic_camera"/>
+
 
 </android.support.design.widget.CoordinatorLayout>

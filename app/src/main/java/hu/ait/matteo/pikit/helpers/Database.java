@@ -1,4 +1,4 @@
-package hu.ait.matteo.pikit;
+package hu.ait.matteo.pikit.helpers;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

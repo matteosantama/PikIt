@@ -36,12 +36,4 @@
         android:layout_margin="16dp"
         app:srcCompat="@mipmap/ic_add" />
 
-    <!--TESTING PURPOSES ONLY-->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|left"
-        android:text="Test"
-        android:id="@+id/test"/>
-
 </android.support.design.widget.CoordinatorLayout>

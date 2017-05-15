@@ -1,22 +1,21 @@
 package hu.ait.matteo.pikit;
 
+import android.app.Activity;
 import android.content.DialogInterface;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -26,18 +25,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import hu.ait.matteo.pikit.adapters.GroupRecyclerAdapter;
 import hu.ait.matteo.pikit.data.Group;
-import hu.ait.matteo.pikit.data.User;
 
 public class GroupsActivity extends AppCompatActivity {
+
+    // permission
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            android.Manifest.permission.READ_EXTERNAL_STORAGE,
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
 
     private FirebaseAuth firebaseAuth;
     private DatabaseReference firebaseDatabase;
@@ -71,6 +71,8 @@ public class GroupsActivity extends AppCompatActivity {
         recyclerViewGroups.setAdapter(groupRecyclerAdapter);
 
         initGroupListener();
+
+        verifyStoragePermissions(this);
     }
 
     public void initGroupListener() {
@@ -168,8 +170,22 @@ public class GroupsActivity extends AppCompatActivity {
         // add the full group to the "group" section of FireBase
         firebaseDatabase.child("groups").child(newGroup.getUniqueID()).setValue(newGroup);
         // add the groupID to the "user"
-        firebaseDatabase.child("users").child(userID).child("groupIDs").child(newGroup.getName()).setValue(newGroup.getUniqueID());
+        firebaseDatabase.child("users").child(userID).child("groupIDs").child(newGroup.getName())
+                .setValue(newGroup.getUniqueID());
+    }
 
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        }
     }
 
 }
