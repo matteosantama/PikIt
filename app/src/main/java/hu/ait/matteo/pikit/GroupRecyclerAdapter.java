@@ -62,6 +62,7 @@ public class GroupRecyclerAdapter extends RecyclerView.Adapter<GroupRecyclerAdap
 
                     String groupID = groupList.get(position).getUniqueID();
                     intent.putExtra("groupID", groupID);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
                     context.startActivity(intent);
                 }

@@ -8,6 +8,9 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class CameraActivity extends AppCompatActivity {
 
     private Camera mCamera = null;
@@ -17,6 +20,9 @@ public class CameraActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+
+        // Bind Butterknife
+        ButterKnife.bind(this);
 
         try {
             mCamera = Camera.open();//you can use open(int) to use different cameras
@@ -37,5 +43,10 @@ public class CameraActivity extends AppCompatActivity {
                 System.exit(0);
             }
         });
+    }
+
+    @OnClick(R.id.snapBtn)
+    public void takePicture() {
+        // TODO handle picture taking
     }
 }
