@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -46,11 +48,13 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import hu.ait.matteo.pikit.adapters.ImageRecyclerAdapter;
 import hu.ait.matteo.pikit.data.Group;
+import hu.ait.matteo.pikit.data.Photo;
 import hu.ait.matteo.pikit.data.User;
+import hu.ait.matteo.pikit.helpers.BaseActivity;
 import hu.ait.matteo.pikit.helpers.Database;
 import hu.ait.matteo.pikit.interfaces.GetDataListener;
 
-public class GroupDetail extends AppCompatActivity {
+public class GroupDetail extends BaseActivity {
 
     @BindView(R.id.addUsersBtn)
     Button addUsersBtn;
@@ -58,8 +62,11 @@ public class GroupDetail extends AppCompatActivity {
     private FirebaseDatabase firebaseDatabase;
     private StorageReference storageRef;
     private AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F);
+
+    private String groupName;
     private String groupID;
     private String uID;
+
     private Group group;
     private Toolbar toolbar;
     private ImageRecyclerAdapter imageRecyclerAdapter;
@@ -73,44 +80,45 @@ public class GroupDetail extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_detail);
 
-        // Get groupID from previous activity
+        // get data from previous activity
         Bundle extras = getIntent().getExtras();
         groupID = extras.getString("groupID");
+        groupName = extras.getString("groupName");
         uID = extras.getString("userID");
 
-        // Init Toolbar
+        // init Toolbar
         toolbar = (Toolbar) findViewById(R.id.toolbar_top);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setTitle(groupName);
 
-        // Bind ButterKnife
+        // bind ButterKnife
         ButterKnife.bind(this);
 
-        // Connect to Firebase and get local Group instance
+        // connect to Firebase and get set local Group object
         firebaseDatabase = FirebaseDatabase.getInstance();
         storageRef = FirebaseStorage.getInstance().getReference();
-        groupFromFirebase();
+        instantiateGroup();
 
-        // Instantiate Recycler
-        imageRecyclerAdapter = new ImageRecyclerAdapter(groupID, uID);
+        // instantiate Recycler
+        imageRecyclerAdapter = new ImageRecyclerAdapter(this, groupID, uID);
         RecyclerView recyclerViewGroups = (RecyclerView) findViewById(
                 R.id.imageRecyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerViewGroups.setLayoutManager(layoutManager);
         recyclerViewGroups.setAdapter(imageRecyclerAdapter);
 
-        // Connect listeners
+        // connect listeners
         connectListeners();
     }
 
-    private void groupFromFirebase() {
+    private void instantiateGroup() {
         Query queryRef = firebaseDatabase.getReference("groups/"+groupID);
 
         queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 group = dataSnapshot.getValue(Group.class);
-                toolbar.setTitle(group.getName());
             }
 
             @Override
@@ -122,44 +130,32 @@ public class GroupDetail extends AppCompatActivity {
     }
 
     private void connectListeners() {
-        Query imagesRef = FirebaseDatabase.getInstance().getReference("images").child(groupID);
-        imagesRef.addChildEventListener(new ChildEventListener() {
+        final DatabaseReference photosRef = FirebaseDatabase.getInstance().getReference("groups").child(groupID).child("photos");
+        photosRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    String key = dataSnapshot.getKey();
-                    String value = data.getValue().toString();
-//                    Log.d("TAG", "adding: ("+key+", "+value+")");
-                    imageRecyclerAdapter.addImage(key, value);
-                }
+                Photo newPhoto = dataSnapshot.getValue(Photo.class);
+                imageRecyclerAdapter.addPhoto(newPhoto);
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    String key = dataSnapshot.getKey();
-                    String value = data.getValue().toString();
-//                    Log.d("TAG", "adding: ("+key+", "+value+")");
-                    imageRecyclerAdapter.addImage(key, value);
-                }
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
             }
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
         });
     }
+
 
     @OnClick(R.id.addUsersBtn)
     public void addUsers() {
@@ -256,7 +252,6 @@ public class GroupDetail extends AppCompatActivity {
     }
 
     private void updateFirebase(Group group, User user) {
-
         // add the full group to the "group" section of FireBase
         firebaseDatabase.getReference().child("groups").child(group.getUniqueID()).setValue(group);
         // add the groupID to the "user"
@@ -264,27 +259,58 @@ public class GroupDetail extends AppCompatActivity {
                 .child("groupIDs").child(group.getName()).setValue(group.getUniqueID());
     }
 
+
+    // open camera activity
     @OnClick(R.id.go_to_cam)
     public void openCamera() {
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(cameraIntent, CAMERA_REQUEST);
     }
 
+    // on camera result
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
 
-            String photoID = UUID.randomUUID().toString();
+            final String photoID = UUID.randomUUID().toString();
 
-            // add photo to storage
-            StorageReference childReference = storageRef.child(groupID+"/"+photoID);
+            // get image and storage reference
             Uri uri = getImageUri(photo);
-            childReference.putFile(uri);
+            StorageReference childReference = storageRef.child(groupID+"/"+photoID);
 
-            // add photoID to DB
-            DatabaseReference dbRef = firebaseDatabase.getReference("images").child(groupID).child(uID).push();
-            dbRef.setValue(photoID);
+            showUploadingDialog();
+
+            // upload file and set task listener
+            final UploadTask uploadTask = childReference.putFile(uri);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle unsuccessful uploads
+                    hideProgressDialog();
+                    Toast.makeText(GroupDetail.this, "Unable to upload image", Toast.LENGTH_SHORT).show();
+                    Log.d("ERROR", "unable to upload image");
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    hideProgressDialog();
+
+                    @SuppressWarnings("VisibleForTests")
+                    String downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                    uploadPhoto(photoID, downloadUrl);
+                }
+            });
         }
+    }
+
+    private void uploadPhoto(String photoID, String url) {
+        Photo photoObj = new Photo(photoID,uID,url);
+        group.addPhoto(photoObj);
+
+        DatabaseReference dbRef = firebaseDatabase.getReference("groups").child(groupID);
+        dbRef.setValue(group);
+
+        imageRecyclerAdapter.addPhoto(photoObj);
     }
 
     public Uri getImageUri(Bitmap inImage) {

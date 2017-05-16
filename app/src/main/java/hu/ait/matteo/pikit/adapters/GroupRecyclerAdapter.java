@@ -31,7 +31,6 @@ public class GroupRecyclerAdapter extends RecyclerView.Adapter<GroupRecyclerAdap
         this.context = context;
         this.uID = uID;
         groupList = new ArrayList<Group>();
-
     }
 
     @Override
@@ -55,6 +54,7 @@ public class GroupRecyclerAdapter extends RecyclerView.Adapter<GroupRecyclerAdap
                     Bundle extras = new Bundle();
 
                     extras.putString("groupID", groupList.get(position).getUniqueID());
+                    extras.putString("groupName", groupList.get(position).getName());
                     extras.putString("userID", uID);
 
                     intent.putExtras(extras);

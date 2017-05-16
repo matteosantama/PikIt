@@ -26,6 +26,15 @@ public class BaseActivity extends AppCompatActivity {
         progressDialog.show();
     }
 
+    public void showUploadingDialog() {
+        if (progressDialog  == null) {
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage("Uploading...\nPlease be patient");
+        }
+
+        progressDialog.show();
+    }
+
     public void hideProgressDialog() {
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();

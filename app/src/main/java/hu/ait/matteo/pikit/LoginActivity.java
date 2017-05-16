@@ -3,7 +3,9 @@ package hu.ait.matteo.pikit;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -106,28 +108,35 @@ public class LoginActivity extends BaseActivity {
                     // add current user to FireBase DB
                     addUserToFireBaseDB(emailString, usernameString, firebaseAuth.getCurrentUser().getUid());
 
-                    Toast.makeText(LoginActivity.this, "REG OK",
-                            Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(LoginActivity.this, "Failed: "+
-                                    task.getException().getLocalizedMessage(),
-                            Toast.LENGTH_SHORT).show();
+                    final Snackbar snackbar = Snackbar.make(findViewById(R.id.root_view), "Login failed", Snackbar.LENGTH_LONG);
+                    snackbar.setAction("OK", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            snackbar.dismiss();
+                        }
+                    }).setActionTextColor(getResources().getColor(android.R.color.holo_red_light ));
+                    snackbar.show();
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 hideProgressDialog();
-                Toast.makeText(LoginActivity.this,
-                        "error: "+e.getMessage(),
-                        Toast.LENGTH_SHORT).show();
+                final Snackbar snackbar = Snackbar.make(findViewById(R.id.root_view), "Unable to complete request", Snackbar.LENGTH_LONG);
+                snackbar.setAction("OK", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        snackbar.dismiss();
+                    }
+                }).setActionTextColor(getResources().getColor(android.R.color.holo_red_light ));
+                snackbar.show();
             }
         });
     }
 
     private void addUserToFireBaseDB(String email, String username, String userId) {
-        List<String> list = new ArrayList<>();
-        User user = new User(email,username,userId,list);
+        User user = new User(email,username,userId);
         firebaseDatabase.child("users").child(userId).setValue(user);
     }
 

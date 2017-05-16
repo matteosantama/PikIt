@@ -32,7 +32,7 @@ import hu.ait.matteo.pikit.data.Group;
 
 public class GroupsActivity extends AppCompatActivity {
 
-    // permission
+    // permission constants
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
             android.Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -49,33 +49,35 @@ public class GroupsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_groups);
 
-        // Set up Toolbar
+        // set up toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Bind ButterKnife
+        // give app read/write storage permissions
+        verifyStoragePermissions(this);
+
+        // bind ButterKnife
         ButterKnife.bind(this);
 
-        // Connect to FireBase
+        // get Firebase references
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance().getReference();
 
+        // get current userID
         userID = firebaseAuth.getCurrentUser().getUid();
 
-        // Instantiate Recycler
-        groupRecyclerAdapter = new GroupRecyclerAdapter(getApplicationContext(), FirebaseAuth.getInstance().getCurrentUser().getUid());
-        RecyclerView recyclerViewGroups = (RecyclerView) findViewById(
-                R.id.recyclerViewGroups);
+        // instantiate recycler
+        groupRecyclerAdapter = new GroupRecyclerAdapter(getApplicationContext(), userID);
+        RecyclerView recyclerViewGroups = (RecyclerView) findViewById(R.id.recyclerViewGroups);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerViewGroups.setLayoutManager(layoutManager);
         recyclerViewGroups.setAdapter(groupRecyclerAdapter);
 
-        initGroupListener();
-
-        verifyStoragePermissions(this);
+        // attach listeners to Firebase DB events
+        connectFirebaseListeners();
     }
 
-    public void initGroupListener() {
+    public void connectFirebaseListeners() {
         Query groupsRef = FirebaseDatabase.getInstance().getReference("groups");
         groupsRef.addChildEventListener(new ChildEventListener() {
             @Override
@@ -112,7 +114,7 @@ public class GroupsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        FirebaseAuth.getInstance().signOut();
+        firebaseAuth.signOut();
         super.onBackPressed();
     }
 
@@ -129,13 +131,14 @@ public class GroupsActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.logout_icon) {
-            FirebaseAuth.getInstance().signOut();
+            firebaseAuth.signOut();
             finish();
         }
 
         return true;
     }
 
+    // open create group dialog
     @OnClick(R.id.fab)
     public void openCreateDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -164,7 +167,7 @@ public class GroupsActivity extends AppCompatActivity {
         alert.show();
     }
 
-    public void addGroupToFireBase(String groupName) {
+    private void addGroupToFireBase(String groupName) {
         Group newGroup = new Group(groupName, userID);
 
         // add the full group to the "group" section of FireBase
