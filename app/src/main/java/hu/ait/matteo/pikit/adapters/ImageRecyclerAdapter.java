@@ -85,9 +85,12 @@ public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageRecyclerAdap
     }
 
     public void addImage(String userID, String photoID) {
-        imageIDs.add(photoID);
-        idMap.put(photoID, userID);
-        notifyDataSetChanged();
+        if (!imageIDs.contains(photoID))
+            imageIDs.add(photoID);
+        if (!idMap.containsValue(photoID)) {
+            idMap.put(photoID, userID);
+            notifyDataSetChanged();
+        }
     }
 
 

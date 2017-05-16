@@ -101,8 +101,6 @@ public class GroupDetail extends AppCompatActivity {
 
         // Connect listeners
         connectListeners();
-        // add groupID to images DB for the first time
-        // TODO
     }
 
     private void groupFromFirebase() {
@@ -128,14 +126,22 @@ public class GroupDetail extends AppCompatActivity {
         imagesRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                String key = dataSnapshot.getKey().toString();
-                String value = dataSnapshot.getValue().toString();
-                imageRecyclerAdapter.addImage(key, value);
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    String key = dataSnapshot.getKey();
+                    String value = data.getValue().toString();
+//                    Log.d("TAG", "adding: ("+key+", "+value+")");
+                    imageRecyclerAdapter.addImage(key, value);
+                }
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    String key = dataSnapshot.getKey();
+                    String value = data.getValue().toString();
+//                    Log.d("TAG", "adding: ("+key+", "+value+")");
+                    imageRecyclerAdapter.addImage(key, value);
+                }
             }
 
             @Override
@@ -276,7 +282,7 @@ public class GroupDetail extends AppCompatActivity {
             childReference.putFile(uri);
 
             // add photoID to DB
-            DatabaseReference dbRef = firebaseDatabase.getReference("images").child(groupID).child(uID);
+            DatabaseReference dbRef = firebaseDatabase.getReference("images").child(groupID).child(uID).push();
             dbRef.setValue(photoID);
         }
     }
