@@ -3,10 +3,10 @@ package hu.ait.matteo.pikit;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -148,18 +148,18 @@ public class GroupsActivity extends AppCompatActivity {
         LayoutInflater inflater = this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.add_dialog, null);
 
-        builder.setTitle("Create a Group");
-        builder.setMessage("Enter the name of a group you would like to create");
+        builder.setTitle(R.string.create_group);
+        builder.setMessage(R.string.group_instr);
         builder.setView(dialogView);
 
         final EditText groupNameET = (EditText) dialogView.findViewById(R.id.group_name);
 
-        builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 addGroupToFireBase(groupNameET.getText().toString());
             }
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 //pass
             }

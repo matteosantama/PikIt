@@ -13,9 +13,6 @@ public class Group {
 
     private String uniqueID;
     private String name;
-
-
-
     private Date date;
 
     private List<String> members;

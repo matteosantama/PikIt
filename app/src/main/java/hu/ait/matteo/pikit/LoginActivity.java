@@ -1,8 +1,8 @@
 package hu.ait.matteo.pikit;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.view.View;
@@ -18,9 +18,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -73,7 +70,7 @@ public class LoginActivity extends BaseActivity {
                 if (task.isSuccessful()) {
                     startActivity(new Intent(LoginActivity.this, GroupsActivity.class));
                 } else {
-                    Toast.makeText(LoginActivity.this, "Failed: "+task.getException().getLocalizedMessage(),
+                    Toast.makeText(LoginActivity.this, getString(R.string.failed)+task.getException().getLocalizedMessage(),
                             Toast.LENGTH_SHORT).show();
                 }
             }
@@ -109,7 +106,7 @@ public class LoginActivity extends BaseActivity {
                     addUserToFireBaseDB(emailString, usernameString, firebaseAuth.getCurrentUser().getUid());
 
                 } else {
-                    final Snackbar snackbar = Snackbar.make(findViewById(R.id.root_view), "Login failed", Snackbar.LENGTH_LONG);
+                    final Snackbar snackbar = Snackbar.make(findViewById(R.id.root_view), R.string.login_failed, Snackbar.LENGTH_LONG);
                     snackbar.setAction("OK", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -123,8 +120,8 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void onFailure(@NonNull Exception e) {
                 hideProgressDialog();
-                final Snackbar snackbar = Snackbar.make(findViewById(R.id.root_view), "Unable to complete request", Snackbar.LENGTH_LONG);
-                snackbar.setAction("OK", new View.OnClickListener() {
+                final Snackbar snackbar = Snackbar.make(findViewById(R.id.root_view), R.string.unable_to_complete, Snackbar.LENGTH_LONG);
+                snackbar.setAction(R.string.ok, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         snackbar.dismiss();
@@ -142,12 +139,12 @@ public class LoginActivity extends BaseActivity {
 
     private boolean isFormValid() {
         if (TextUtils.isEmpty(emailInput.getText().toString())) {
-            emailInput.setError("Cannot be empty");
+            emailInput.setError(getString(R.string.cannot_be_empty));
             return false;
         }
 
         if (TextUtils.isEmpty(passwordInput.getText().toString())) {
-            passwordInput.setError("Cannot be empty");
+            passwordInput.setError(getString(R.string.cannot_be_empty));
             return false;
         }
 

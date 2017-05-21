@@ -4,23 +4,17 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
-import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -37,10 +31,8 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 import butterknife.BindView;
@@ -166,11 +158,11 @@ public class GroupDetail extends BaseActivity {
         LayoutInflater inflater = this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.user_add_dialog, null);
 
-        builder.setTitle("Enter Email");
-        builder.setMessage("Enter the email address of a user you would like to add");
+        builder.setTitle(R.string.email);
+        builder.setMessage(R.string.email_instr);
         builder.setView(dialogView);
 
-        builder.setPositiveButton("Add",
+        builder.setPositiveButton(R.string.add,
                 new DialogInterface.OnClickListener()
                 {
                     @Override
@@ -180,7 +172,7 @@ public class GroupDetail extends BaseActivity {
                     }
                 });
 
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -239,7 +231,7 @@ public class GroupDetail extends BaseActivity {
                     alert.dismiss();
                 } else {
                     // otherwise set error message
-                    field.setError("Cannot find user");
+                    field.setError(getString(R.string.cannot_find_user));
                 }
             }
 
@@ -274,21 +266,23 @@ public class GroupDetail extends BaseActivity {
 
             final String photoID = UUID.randomUUID().toString();
 
-            // get image and storage reference
-            Uri uri = getImageUri(photo);
+            // translate bitmap to byte array
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            photo.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] arr = baos.toByteArray();
+
             StorageReference childReference = storageRef.child(groupID+"/"+photoID);
 
             showUploadingDialog();
 
             // upload file and set task listener
-            final UploadTask uploadTask = childReference.putFile(uri);
+            final UploadTask uploadTask = childReference.putBytes(arr);
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
                     // Handle unsuccessful uploads
                     hideProgressDialog();
-                    Toast.makeText(GroupDetail.this, "Unable to upload image", Toast.LENGTH_SHORT).show();
-                    Log.d("ERROR", "unable to upload image");
+                    Toast.makeText(GroupDetail.this, R.string.upload_error, Toast.LENGTH_SHORT).show();
                 }
             }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -313,12 +307,6 @@ public class GroupDetail extends BaseActivity {
         imageRecyclerAdapter.addPhoto(photoObj);
     }
 
-    public Uri getImageUri(Bitmap inImage) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(this.getContentResolver(), inImage, "Title", null);
-        return Uri.parse(path);
-    }
 
     @Override
     public boolean onSupportNavigateUp() {
