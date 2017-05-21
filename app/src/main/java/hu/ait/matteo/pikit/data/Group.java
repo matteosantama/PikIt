@@ -1,6 +1,7 @@
 package hu.ait.matteo.pikit.data;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,6 +13,10 @@ public class Group {
 
     private String uniqueID;
     private String name;
+
+
+
+    private Date date;
 
     private List<String> members;
     private List<Photo> photos;
@@ -29,11 +34,20 @@ public class Group {
         photos = new ArrayList<Photo>();
     }
 
-    public Group(String uniqueID, String name, List<String> members, List<Photo> photos) {
+    public Group(String uniqueID, String name, List<String> members, List<Photo> photos, Date date) {
         this.uniqueID = uniqueID;
         this.name = name;
         this.members = members;
         this.photos = photos;
+        this.date = date;
+    }
+
+    public Date getDate() {
+        return this.date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public String getUniqueID() {

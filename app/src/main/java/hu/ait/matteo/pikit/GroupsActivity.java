@@ -25,6 +25,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
+import java.util.Date;
+
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import hu.ait.matteo.pikit.adapters.GroupRecyclerAdapter;
@@ -169,6 +171,7 @@ public class GroupsActivity extends AppCompatActivity {
 
     private void addGroupToFireBase(String groupName) {
         Group newGroup = new Group(groupName, userID);
+        newGroup.setDate(new Date());
 
         // add the full group to the "group" section of FireBase
         firebaseDatabase.child("groups").child(newGroup.getUniqueID()).setValue(newGroup);

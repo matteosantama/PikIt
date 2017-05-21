@@ -5,11 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,6 +66,9 @@ public class GroupRecyclerAdapter extends RecyclerView.Adapter<GroupRecyclerAdap
                     context.startActivity(intent);
                 }
             });
+
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+            holder.tvDate.setText(dateFormat.format(groupList.get(position).getDate()));
         }
     }
 
@@ -81,12 +87,14 @@ public class GroupRecyclerAdapter extends RecyclerView.Adapter<GroupRecyclerAdap
         public CardView cardView;
         public TextView groupTitle;
         public TextView memberCount;
+        public TextView tvDate;
 
         public ViewHolder(View itemView) {
             super(itemView);
             cardView = (CardView) itemView.findViewById(R.id.card_view);
             groupTitle = (TextView) itemView.findViewById(R.id.groupTitle);
             memberCount = (TextView) itemView.findViewById(R.id.memberCount);
+            tvDate = (TextView) itemView.findViewById(R.id.tvDate);
         }
     }
 }
