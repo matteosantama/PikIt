@@ -64,7 +64,8 @@ public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageRecyclerAdap
     public void onBindViewHolder(final ViewHolder holder, int position) {
         Photo currPhoto = photos.get(position);
 
-        Glide.with(context).load(currPhoto.getUrl()).into(holder.imageView);
+        Glide.with(context).load(currPhoto.getUrl()).override(600,300).into(holder.imageView);
+
         // if the current user took the picture, pull the image to the right
         if (photos.get(position).getCreatorID().equals(uID)) {
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) holder.imageView.getLayoutParams();
@@ -89,7 +90,6 @@ public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageRecyclerAdap
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView imageView;
-        public TextView test;
 
         public ViewHolder(View itemView) {
             super(itemView);

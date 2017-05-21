@@ -67,7 +67,7 @@ public class GroupRecyclerAdapter extends RecyclerView.Adapter<GroupRecyclerAdap
                 }
             });
 
-            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+            DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
             holder.tvDate.setText(dateFormat.format(groupList.get(position).getDate()));
         }
     }

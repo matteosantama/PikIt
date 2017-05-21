@@ -274,14 +274,17 @@ public class GroupDetail extends BaseActivity {
 
             final String photoID = UUID.randomUUID().toString();
 
-            // get image and storage reference
-            Uri uri = getImageUri(photo);
+            // translate bitmap to byte array
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            photo.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] arr = baos.toByteArray();
+
             StorageReference childReference = storageRef.child(groupID+"/"+photoID);
 
             showUploadingDialog();
 
             // upload file and set task listener
-            final UploadTask uploadTask = childReference.putFile(uri);
+            final UploadTask uploadTask = childReference.putBytes(arr);
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
@@ -313,12 +316,6 @@ public class GroupDetail extends BaseActivity {
         imageRecyclerAdapter.addPhoto(photoObj);
     }
 
-    public Uri getImageUri(Bitmap inImage) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(this.getContentResolver(), inImage, "Title", null);
-        return Uri.parse(path);
-    }
 
     @Override
     public boolean onSupportNavigateUp() {
