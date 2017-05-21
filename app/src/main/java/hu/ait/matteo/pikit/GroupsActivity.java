@@ -118,7 +118,6 @@ public class GroupsActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("TEST", "on resume");
         groupRecyclerAdapter.notifyDataSetChanged();
     }
 
