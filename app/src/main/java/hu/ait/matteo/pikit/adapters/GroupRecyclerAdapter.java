@@ -8,7 +8,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -18,6 +21,7 @@ import java.util.List;
 import hu.ait.matteo.pikit.GroupDetail;
 import hu.ait.matteo.pikit.R;
 import hu.ait.matteo.pikit.data.Group;
+import hu.ait.matteo.pikit.data.Photo;
 
 /**
  * Created by matteosantamaria on 5/13/17.
@@ -66,6 +70,13 @@ public class GroupRecyclerAdapter extends RecyclerView.Adapter<GroupRecyclerAdap
                 }
             });
 
+            Group currGroup = groupList.get(position);
+            List<Photo> photos = currGroup.getPhotos();
+            if (photos.size() > 0) {
+                String recentURL = photos.get(photos.size() - 1).getUrl();
+                Glide.with(context).load(recentURL).thumbnail(0.1f).into(holder.groupIcon);
+            }
+
             DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
             holder.tvDate.setText(dateFormat.format(groupList.get(position).getDate()));
         }
@@ -87,6 +98,7 @@ public class GroupRecyclerAdapter extends RecyclerView.Adapter<GroupRecyclerAdap
         public TextView groupTitle;
         public TextView memberCount;
         public TextView tvDate;
+        public ImageView groupIcon;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -94,6 +106,7 @@ public class GroupRecyclerAdapter extends RecyclerView.Adapter<GroupRecyclerAdap
             groupTitle = (TextView) itemView.findViewById(R.id.groupTitle);
             memberCount = (TextView) itemView.findViewById(R.id.memberCount);
             tvDate = (TextView) itemView.findViewById(R.id.tvDate);
+            groupIcon = (ImageView) itemView.findViewById(R.id.group_icon);
         }
     }
 }

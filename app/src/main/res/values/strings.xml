@@ -16,5 +16,5 @@
     <string name="upload_error">Unable to upload image</string>
     <string name="registering">Registering...</string>
     <string name="logging_in">Logging in...</string>
-    <string name="uploading">Uploading... Please be patient</string>
+    <string name="uploading">Uploading...\nPlease be patient</string>
 </resources>

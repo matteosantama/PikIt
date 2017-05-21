@@ -18,7 +18,8 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:src="@mipmap/ic_launcher_round"
-            android:padding="6dp"/>
+            android:padding="6dp"
+            android:scaleType="center"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -33,7 +34,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Group Name"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textSize="24dp"/>
 
             <TextView
                 android:id="@+id/memberCount"
