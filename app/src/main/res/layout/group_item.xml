@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:layout_margin="10dp"
+    card_view:cardBackgroundColor="@color/colorBg"
     card_view:cardCornerRadius="4dp">
 
     <RelativeLayout
@@ -17,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:src="@mipmap/ic_launcher_round"
+            android:src="@mipmap/ic_pikit_logo"
             android:padding="6dp"/>
 
         <LinearLayout
