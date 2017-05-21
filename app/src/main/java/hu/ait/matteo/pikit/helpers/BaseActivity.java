@@ -2,7 +2,8 @@ package hu.ait.matteo.pikit.helpers;
 
 import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+
+import hu.ait.matteo.pikit.R;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -11,7 +12,7 @@ public class BaseActivity extends AppCompatActivity {
     public void showRegisterDialog() {
         if (progressDialog  == null) {
             progressDialog = new ProgressDialog(this);
-            progressDialog.setMessage("Registering...");
+            progressDialog.setMessage(getString(R.string.registering));
         }
 
         progressDialog.show();
@@ -20,7 +21,7 @@ public class BaseActivity extends AppCompatActivity {
     public void showLoginDialog() {
         if (progressDialog  == null) {
             progressDialog = new ProgressDialog(this);
-            progressDialog.setMessage("Logging in...");
+            progressDialog.setMessage(getString(R.string.logging_in));
         }
 
         progressDialog.show();
@@ -29,7 +30,7 @@ public class BaseActivity extends AppCompatActivity {
     public void showUploadingDialog() {
         if (progressDialog  == null) {
             progressDialog = new ProgressDialog(this);
-            progressDialog.setMessage("Uploading...\nPlease be patient");
+            progressDialog.setMessage(getString(R.string.uploading));
         }
 
         progressDialog.show();

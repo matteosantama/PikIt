@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">PikIt</string>
+    <string name="failed">Failed:</string>
+    <string name="login_failed">Login failed</string>
+    <string name="unable_to_complete">Unable to complete request</string>
+    <string name="ok">OK</string>
+    <string name="cannot_be_empty">Cannot be empty</string>
+    <string name="create_group">Create a Group</string>
+    <string name="group_instr">Enter the name of a group you would like to create</string>
+    <string name="create">Create</string>
+    <string name="cancel">Cancel</string>
+    <string name="email">Enter Email</string>
+    <string name="email_instr">Enter the email address of a user you would like to add</string>
+    <string name="add">Add</string>
+    <string name="cannot_find_user">Cannot find user</string>
+    <string name="upload_error">Unable to upload image</string>
+    <string name="registering">Registering...</string>
+    <string name="logging_in">Logging in...</string>
+    <string name="uploading">Uploading... Please be patient</string>
 </resources>
